@@ -21,4 +21,10 @@
         android:id="@+id/edit_year"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <TextView
+        android:textColor="@color/design_default_color_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/dialog_error" />
 </LinearLayout>

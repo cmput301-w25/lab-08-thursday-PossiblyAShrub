@@ -5,18 +5,28 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+
 import com.example.androidcicd.movie.Movie;
 import com.example.androidcicd.movie.MovieProvider;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.concurrent.ExecutionException;
+
 public class MovieProviderTest {
+    @Rule
+    public TestRule rule = new InstantTaskExecutorRule();
+
     @Mock
     private FirebaseFirestore mockFirestore;
 
@@ -41,6 +51,8 @@ public class MovieProviderTest {
         // Setup the movie provider
         MovieProvider.setInstanceForTesting(mockFirestore);
         movieProvider = MovieProvider.getInstance(mockFirestore);
+
+        MovieProvider.IS_TEST = true;
     }
 
     @Test
@@ -90,5 +102,16 @@ public class MovieProviderTest {
 
         // Call update movie, which should throw an error due to having an empty name
         movieProvider.updateMovie(movie, "", "Another Genre", 2026);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdateMovieShouldThrowErrorForDuplicateName() throws InterruptedException, ExecutionException {
+        MovieProvider.IS_TEST = true;
+        MovieProvider.TEST_GET_MOVIE_COUNT = 1;
+
+        // Call update movie, which should throw an error due to having a duplicate name
+        Movie movie = new Movie("Oppenheimer", "Thriller/Historical Drama", 2023);
+        movie.setId("321");
+        movieProvider.updateMovie(movie, "Oppenheimer", "Another Genre", 2026);
     }
 }
