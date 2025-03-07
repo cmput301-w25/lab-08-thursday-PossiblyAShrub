@@ -3,16 +3,15 @@
 
 ## Student Details
 
-- **Full Name:** `<Enter name>`
-- **CCID:** `<Enter ccid>`
+- **Full Name:** `Aidan Olsen`
+- **CCID:** `arolsen`
 
 ## References and Resources
 
-List any resources used here, or simply put `N/A` if not applicable.
+- [Lab Instructions](./lab-instructions.md)
+- [Lab Description](./lab-description.md)
+- [Firebase Docs | AggregateSource](https://firebase.google.com/docs/reference/android/com/google/firebase/firestore/AggregateSource)
 
 ## Verbal Collaboration
 
-| Student Name | CCID     |
-| ------------ | -------- |
-| `<example1>` | `<CCID>` |
-| `<example2>` | `<CCID>` |
+None. I did not verbally collaborate with anyone on this lab assignment.
