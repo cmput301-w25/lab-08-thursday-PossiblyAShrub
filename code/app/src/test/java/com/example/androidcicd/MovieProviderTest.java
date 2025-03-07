@@ -16,6 +16,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.concurrent.ExecutionException;
+
 public class MovieProviderTest {
     @Mock
     private FirebaseFirestore mockFirestore;
@@ -41,6 +43,8 @@ public class MovieProviderTest {
         // Setup the movie provider
         MovieProvider.setInstanceForTesting(mockFirestore);
         movieProvider = MovieProvider.getInstance(mockFirestore);
+
+        MovieProvider.IS_TEST = true;
     }
 
     @Test
@@ -90,5 +94,16 @@ public class MovieProviderTest {
 
         // Call update movie, which should throw an error due to having an empty name
         movieProvider.updateMovie(movie, "", "Another Genre", 2026);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdateMovieShouldThrowErrorForDuplicateName() throws InterruptedException, ExecutionException {
+        MovieProvider.IS_TEST = true;
+        MovieProvider.TEST_GET_MOVIE_COUNT = 1;
+
+        // Call update movie, which should throw an error due to having a duplicate name
+        Movie movie = new Movie("Oppenheimer", "Thriller/Historical Drama", 2023);
+        movie.setId("321");
+        movieProvider.updateMovie(movie, "Oppenheimer", "Another Genre", 2026);
     }
 }

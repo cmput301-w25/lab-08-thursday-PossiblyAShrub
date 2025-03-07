@@ -5,13 +5,18 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.hasErrorText;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.any;
+import static org.hamcrest.Matchers.not;
+
 import android.util.Log;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -99,6 +104,23 @@ public class MainActivityTest {
 
         // Check that an error is shown to the user
         onView(withId(R.id.edit_title)).check(matches(hasErrorText("Movie name cannot be empty!")));
+    }
+
+    @Test
+    public void addMovieShouldShowErrorForDuplicateMovieName() {
+        // Click on button to open addMovie dialog
+        onView(withId(R.id.buttonAddMovie)).perform(click());
+
+        // Add movie details, but no title
+        onView(withId(R.id.edit_title)).perform(ViewActions.typeText("Oppenheimer"));
+        onView(withId(R.id.edit_genre)).perform(ViewActions.typeText("Thriller"));
+        onView(withId(R.id.edit_year)).perform(ViewActions.typeText("2024"));
+
+        // Submit Form
+        onView(withId(android.R.id.button1)).perform(click());
+
+        // Check that an error is shown to the user
+        onView(withId(R.id.dialog_error)).check(matches(withText("Movie has a duplicate title!")));
     }
 
     @Test

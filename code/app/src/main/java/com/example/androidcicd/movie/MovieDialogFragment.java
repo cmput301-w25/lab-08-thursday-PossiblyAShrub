@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +19,8 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.androidcicd.R;
 import com.example.androidcicd.utils.TextValidator;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MovieDialogFragment extends DialogFragment {
@@ -42,6 +45,7 @@ public class MovieDialogFragment extends DialogFragment {
         editMovieName = view.findViewById(R.id.edit_title);
         editMovieGenre = view.findViewById(R.id.edit_genre);
         editMovieYear = view.findViewById(R.id.edit_year);
+        TextView dialogError = view.findViewById(R.id.dialog_error);
         movieProvider = MovieProvider.getInstance(FirebaseFirestore.getInstance());
 
         String tag = getTag();
@@ -105,12 +109,15 @@ public class MovieDialogFragment extends DialogFragment {
                 String title = editMovieName.getText().toString().trim();
                 String genre = editMovieGenre.getText().toString().trim();
                 int year = Integer.parseInt(editMovieYear.getText().toString().trim());
-                if (tag != null && tag.equals( "Movie Details")) {
-                    movieProvider.updateMovie(movie, title, genre, year);
+
+                Task<DocumentReference> task;
+                if (tag != null && tag.equals("Movie Details")) {
+                    task = movieProvider.updateMovie(movie, title, genre, year);
                 } else {
-                    movieProvider.addMovie(new Movie(title, genre, year));
+                    task = movieProvider.addMovie(new Movie(title, genre, year));
                 }
-                dialog.dismiss();
+                task.addOnSuccessListener(_doc -> dialog.dismiss())
+                    .addOnFailureListener(error -> dialogError.setText(error.getMessage()));
             });
         });
         return dialog;
